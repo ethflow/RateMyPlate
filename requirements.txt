@@ -1,5 +1,1 @@
 streamlit
-pystan
-pandas
-random
-feature_01
