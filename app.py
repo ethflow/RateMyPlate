@@ -9,7 +9,7 @@ st.write("it works, programming god")
 st.write(even_list)
 
 for i in even_list:
-   return i + 1 
-
+    i = i + 10
+    
 st.write(even_list)
 st.write("Works properly")
