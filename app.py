@@ -10,6 +10,6 @@ st.write(even_list)
 
 for i in even_list:
     i = i + 10
-    
-st.write(even_list)
+
+st.write(i)
 st.write("Works properly")
