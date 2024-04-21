@@ -8,9 +8,7 @@ even_list = return_even(original_list)
 st.write("it works, programming god")
 st.write(even_list)
 
-for i in even_list:
-    modified_even_list = i + 10
-
-st.write(modified_even_list)
 st.write("Works properly")
+st.write("Works for me too")
+
 
