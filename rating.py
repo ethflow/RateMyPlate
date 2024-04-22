@@ -43,13 +43,6 @@ class MealRatingSystem:
         with open(self.filename, 'w') as file:
             file.writelines(f"{rating}\n" for rating in ratings)
 
-    def request_user_rating(self):
-        """Prompt the user for a rating between 1 and 6 using Streamlit."""
-        # Use Streamlit's number_input for user rating input
-        user_rating = st.number_input(
-            "Bewerten Sie Ihr Gericht von 1 bis 6:", min_value=1, max_value=6, step=1)
-        return user_rating
-
     def add_user_rating_to_list(self, user_rating):
         """Add user rating to the existing list of ratings and calculate the new average."""
         self.ratings.append(user_rating)
