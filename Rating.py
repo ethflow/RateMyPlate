@@ -75,9 +75,9 @@ class MealRatingSystem:
         new_average = self.add_user_rating_to_list(initial_ratings, user_rating)
         self.save_ratings(initial_ratings)
 
-        print(f"Meal ID: {meal_id}, Meal Name: {meal_name}")
-        print(f"Updated Ratings: {initial_ratings}")
-        print(f"New Average Rating: {new_average}")
+        #print(f"Meal ID: {meal_id}, Meal Name: {meal_name}")
+        #print(f"Updated Ratings: {initial_ratings}")
+        #print(f"New Average Rating: {new_average}")
 
 # Example of using the class
 system = MealRatingSystem("52779")
