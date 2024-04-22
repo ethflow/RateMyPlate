@@ -1,84 +1,62 @@
-import requests
-import random
-import os
+import streamlit as st
+from menu_generator import WeeklyMenuGenerator
+from rating import MealRatingSystem
 
-class MealRatingSystem:
-    def __init__(self, meal_id):
-        self.meal_id = meal_id
-        self.filename = f"ratings_{self.meal_id}.txt"
+# Title of the application
+st.title("Wochenplan")
 
-    def fetch_meal_data(self):
-        """Fetch meal data from TheMealDB API based on the given meal ID."""
-        url = f"https://www.themealdb.com/api/json/v1/1/lookup.php?i={self.meal_id}"
-        response = requests.get(url)
-        data = response.json()
-        return data
+# Initialize the menu generator and rating systems as session state variables to persist across reruns
+if 'menu_generator' not in st.session_state:
+    st.session_state.menu_generator = WeeklyMenuGenerator()
+if 'rating_systems' not in st.session_state:
+    st.session_state.rating_systems = {}
 
-    def extract_meal_info(self, data):
-        """Extract meal ID and meal name from the API response."""
-        meals = data['meals'][0]
-        self.meal_name = meals['strMeal']
-        return self.meal_id, self.meal_name
+# Function to generate a new weekly menu and initialize the rating systems for each meal
+def generate_new_weekly_menu():
+    # Generate a new instance of the WeeklyMenuGenerator class
+    st.session_state.menu_generator = WeeklyMenuGenerator()
+    # Initialize rating systems for the new menu
+    grouped_menu = st.session_state.menu_generator.grouped_menu
+    initialize_rating_systems(grouped_menu)
+    return grouped_menu
 
-    def generate_consistent_ratings(self, num_ratings=50, rating_scale=(1, 6)):
-        """Generate a consistent list of ratings for a given meal ID using a deterministic random seed."""
-        random.seed(int(self.meal_id))  # Convert meal_id to integer for seeding
-        ratings = [random.randint(*rating_scale) for _ in range(num_ratings)]
-        return ratings
+# Function to initialize MealRatingSystem objects for each meal in the weekly menu
+def initialize_rating_systems(grouped_menu):
+    for day, meals in zip(days_of_week, grouped_menu):
+        veg_meal, non_veg_meal = meals
+        for meal in [veg_meal, non_veg_meal]:
+            meal_id = meal[0]
+            if meal_id not in st.session_state.rating_systems:
+                st.session_state.rating_systems[meal_id] = MealRatingSystem(meal_id)
 
-    def load_existing_ratings(self):
-        """Load existing ratings from a file."""
-        try:
-            with open(self.filename, 'r') as file:
-                ratings = [int(line.strip()) for line in file.readlines()]
-            return ratings
-        except FileNotFoundError:
-            return []
+# Define the days of the week
+days_of_week = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
 
-    def save_ratings(self, ratings):
-        """Save ratings to a file."""
-        with open(self.filename, 'w') as file:
-            for rating in ratings:
-                file.write(f"{rating}\n")
+# Add a button that generates a new weekly menu when clicked
+if st.button("Nächste Woche"):
+    grouped_menu = generate_new_weekly_menu()
+else:
+    # Use the existing menu if the button has not been clicked
+    grouped_menu = st.session_state.menu_generator.grouped_menu
+    initialize_rating_systems(grouped_menu)
 
-    def request_user_rating(self):
-        """Prompt the user for a rating between 1 and 6. Ensure the rating is valid and handle different input types."""
-        while True:
-            user_input = input("Schön warst du Gast bei uns :-) bewerte dein Gericht von 1 bis 6: ")
-            try:
-                user_rating = int(user_input)
-                if 1 <= user_rating <= 6:
-                    break
-                else:
-                    print("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
-            except ValueError:
-                print("Bitte bewerte dein Gericht mit einer ganzen Zahl von 1 bis 6")
-        return user_rating
+# Display the grouped weekly menu for Monday to Friday and allow user ratings
+for day, meals in zip(days_of_week, grouped_menu):
+    veg_meal, non_veg_meal = meals
+    st.subheader(day)
+    
+    # Display the vegetarian meal and allow rating
+    veg_meal_id, veg_meal_name = veg_meal
+    st.text(f"Vegetarisch: {veg_meal_name}")
+    if st.button(f"Rate {veg_meal_name}"):
+        user_rating = st.session_state.rating_systems[veg_meal_id].request_user_rating()
+        average_rating = st.session_state.rating_systems[veg_meal_id].add_user_rating_to_list(user_rating)
+        st.text(f"Durchschnittliche Bewertung: {average_rating}")
 
-    def add_user_rating_to_list(self, ratings, user_rating):
-        """Add user rating to the existing list of ratings and calculate the new average."""
-        ratings.append(user_rating)
-        new_average = round(sum(ratings) / len(ratings), 1)  # Rounding to one decimal place
-        return new_average
-
-    def run(self):
-        """Main function to handle API data fetching, initial rating generation, user rating addition, and final output."""
-        meal_data = self.fetch_meal_data()
-        meal_id, meal_name = self.extract_meal_info(meal_data)
-
-        initial_ratings = self.load_existing_ratings()
-        if not initial_ratings:
-            initial_ratings = self.generate_consistent_ratings()
-            self.save_ratings(initial_ratings)
-
-        user_rating = self.request_user_rating()
-        new_average = self.add_user_rating_to_list(initial_ratings, user_rating)
-        self.save_ratings(initial_ratings)
-
-        #print(f"Meal ID: {meal_id}, Meal Name: {meal_name}")
-        #print(f"Updated Ratings: {initial_ratings}")
-        #print(f"New Average Rating: {new_average}")
-
-# Example of using the class
-system = MealRatingSystem("52779")
-system.run()
+    # Display the non-vegetarian meal and allow rating
+    non_veg_meal_id, non_veg_meal_name = non_veg_meal
+    st.text(f"Nicht-vegetarisch: {non_veg_meal_name}")
+    if st.button(f"Rate {non_veg_meal_name}"):
+        user_rating = st.session_state.rating_systems[non_veg_meal_id].request_user_rating()
+        average_rating = st.session_state.rating_systems[non_veg_meal_id].add_user_rating_to_list(user_rating)
+        st.text(f"Durchschnittliche Bewertung: {average_rating}")
