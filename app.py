@@ -1,3 +1,4 @@
+pip install plotly
 import streamlit as st
 import plotly.express as px
 from menu_generator import WeeklyMenuGenerator
@@ -37,11 +38,12 @@ for day, meals in zip(days_of_week, grouped_menu):
             new_average_rating = rating_system.add_user_rating_to_list(user_rating)
             rating_system.save_ratings(rating_system.ratings)
 
-            # Create a plotly bar chart with the updated average rating
-            fig = px.bar(x=["Rating"], y=[new_average_rating], range_y=[1, 6], text=[new_average_rating])
-            fig.update_traces(marker_color='blue', marker_line_width=1.5, width=0.3)  # Make the bar thinner
-            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', xaxis={'visible': False},
-                              yaxis={'visible': True, 'showgrid': False})
+            # Create a Plotly bar chart with the updated average rating
+            fig = px.bar(x=[meal_name], y=[new_average_rating], range_y=[1, 6], text=[new_average_rating])
+            fig.update_traces(marker_color='blue', marker_line_width=1.5, width=0.1)  # Make the bar thinner
+            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', showlegend=False,
+                              xaxis_title="", yaxis_title="Rating",
+                              yaxis=dict(showgrid=False, tickvals=[1, 2, 3, 4, 5, 6]))
             st.plotly_chart(fig, use_container_width=True)
         elif submit_button:
             st.error("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
