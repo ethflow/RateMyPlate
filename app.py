@@ -1,6 +1,4 @@
-pip install plotly
 import streamlit as st
-import plotly.express as px
 from menu_generator import WeeklyMenuGenerator
 from rating import MealRatingSystem
 
@@ -45,14 +43,13 @@ for day, meals in zip(days_of_week, grouped_menu):
 
     # Allow user to rate vegetarian meal
     veg_user_rating = st.number_input(f"Bewerte das vegetarische Gericht '{veg_meal_name}' von 1 bis 6", min_value=1,
-                                      max_value=6, step=1)
-    if st.button(f"Vegetarisches Gericht '{veg_meal_name}' bewerten", key=f"veg_{day}"):
+                                      max_value=6, step=1, key=f'veg_rate_{day}')
+    veg_rate_button = st.button(f"Vegetarisches Gericht '{veg_meal_name}' bewerten", key=f'veg_button_{day}')
+    if veg_rate_button:
         veg_rating_system.add_user_rating_to_list(veg_user_rating)
         veg_average_rating = round(sum(veg_rating_system.ratings) / len(veg_rating_system.ratings), 1)
-
-    # Plot the average rating
-    fig = px.bar(x=["Rating"], y=[veg_average_rating], range_y=[1, 6])
-    st.plotly_chart(fig)
+        # Visualize as bar chart
+        st.bar_chart({'Bewertung': [1, veg_average_rating, 6]})
 
     # For non-vegetarian meal
     non_veg_meal_id = non_veg_meal[0]
@@ -65,12 +62,11 @@ for day, meals in zip(days_of_week, grouped_menu):
 
     # Allow user to rate non-vegetarian meal
     non_veg_user_rating = st.number_input(f"Bewerte das nicht-vegetarische Gericht '{non_veg_meal_name}' von 1 bis 6",
-                                          min_value=1, max_value=6, step=1)
-    if st.button(f"Nicht-vegetarisches Gericht '{non_veg_meal_name}' bewerten", key=f"non_veg_{day}"):
+                                          min_value=1, max_value=6, step=1, key=f'non_veg_rate_{day}')
+    non_veg_rate_button = st.button(f"Nicht-vegetarisches Gericht '{non_veg_meal_name}' bewerten",
+                                    key=f'non_veg_button_{day}')
+    if non_veg_rate_button:
         non_veg_rating_system.add_user_rating_to_list(non_veg_user_rating)
         non_veg_average_rating = round(sum(non_veg_rating_system.ratings) / len(non_veg_rating_system.ratings), 1)
-
-    # Plot the average rating
-    fig = px.bar(x=["Rating"], y=[non_veg_average_rating], range_y=[1, 6])
-    st.plotly_chart(fig)
-
+        # Visualize as bar chart
+        st.bar_chart({'Bewertung': [1, non_veg_average_rating, 6]})
