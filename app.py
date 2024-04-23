@@ -1,4 +1,5 @@
 import streamlit as st
+import matplotlib.pyplot as plt
 from menu_generator import WeeklyMenuGenerator
 from rating import MealRatingSystem
 
@@ -6,7 +7,6 @@ from rating import MealRatingSystem
 st.title("Wochenplan")
 
 # Create an instance of WeeklyMenuGenerator
-# Initialize the menu generator as a session state variable to persist across reruns
 if 'menu_generator' not in st.session_state:
     st.session_state.menu_generator = WeeklyMenuGenerator()
 
@@ -36,10 +36,16 @@ for day, meals in zip(days_of_week, grouped_menu):
     st.text(f"Durchschnittliche Bewertung: {veg_average_rating}")
 
     veg_user_rating = st.number_input(f"Bewerte das vegetarische Gericht '{veg_meal_name}' von 1 bis 6", min_value=1,
-                                      max_value=6, step=1)
-    if st.button(f"Bewertung abgeben für '{veg_meal_name}'"):
+                                      max_value=6, step=1, key=f'veg{day}')
+    if st.button(f"Bewertung abgeben für '{veg_meal_name}'", key=f'btn_veg{day}'):
         new_average_rating = veg_rating_system.add_user_rating_to_list(veg_user_rating)
-        st.bar_chart({'Average Rating': [new_average_rating]}, height=150)  # Ein Balken für die Durchschnittsbewertung
+        fig, ax = plt.subplots()
+        ax.barh(['Rating'], [new_average_rating], color='green', height=0.4)
+        ax.set_xlim(1, 6)
+        ax.set_xticks([1, 2, 3, 4, 5, 6])
+        ax.grid(False)  # Gitterlinien entfernen
+        plt.box(on=None)  # Rahmen entfernen
+        st.pyplot(fig)
 
     # Non-vegetarian meal
     non_veg_meal_id = non_veg_meal[0]
@@ -50,7 +56,13 @@ for day, meals in zip(days_of_week, grouped_menu):
     st.text(f"Durchschnittliche Bewertung: {non_veg_average_rating}")
 
     non_veg_user_rating = st.number_input(f"Bewerte das nicht-vegetarische Gericht '{non_veg_meal_name}' von 1 bis 6",
-                                          min_value=1, max_value=6, step=1)
-    if st.button(f"Bewertung abgeben für '{non_veg_meal_name}'"):
+                                          min_value=1, max_value=6, step=1, key=f'nonveg{day}')
+    if st.button(f"Bewertung abgeben für '{non_veg_meal_name}'", key=f'btn_nonveg{day}'):
         new_average_rating = non_veg_rating_system.add_user_rating_to_list(non_veg_user_rating)
-        st.bar_chart({'Average Rating': [new_average_rating]}, height=150)  # Ein Balken für die Durchschnittsbewertung
+        fig, ax = plt.subplots()
+        ax.barh(['Rating'], [new_average_rating], color='blue', height=0.4)
+        ax.set_xlim(1, 6)
+        ax.set_xticks([1, 2, 3, 4, 5, 6])
+        ax.grid(False)  # Gitterlinien entfernen
+        plt.box(on=None)  # Rahmen entfernen
+        st.pyplot(fig)
