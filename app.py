@@ -39,17 +39,15 @@ for day, meals in zip(days_of_week, grouped_menu):
     veg_average_rating = round(sum(veg_rating_system.ratings) / len(veg_rating_system.ratings), 1)
 
     # Display vegetarian meal name and average rating
-    st.text(f"Vegetarisch: {veg_meal_name}")
+    st.text(f"Vegetarisch: {veg_meal_name} (Durchschnittliche Bewertung: {veg_average_rating})")
 
     # Allow user to rate vegetarian meal
     veg_user_rating = st.number_input(f"Bewerte das vegetarische Gericht '{veg_meal_name}' von 1 bis 6", min_value=1,
-                                      max_value=6, step=1, key=f'veg_rate_{day}')
-    veg_rate_button = st.button(f"Vegetarisches Gericht '{veg_meal_name}' bewerten", key=f'veg_button_{day}')
-    if veg_rate_button:
-        veg_rating_system.add_user_rating_to_list(veg_user_rating)
-        veg_average_rating = round(sum(veg_rating_system.ratings) / len(veg_rating_system.ratings), 1)
-        # Visualize as bar chart
-        st.bar_chart({'Bewertung': [1, veg_average_rating, 6]})
+                                      max_value=6, step=1, key=f'veg_{day}')
+    if st.button(f"Bewertung abgeben für '{veg_meal_name}'", key=f'veg_btn_{day}'):
+        new_average_rating = veg_rating_system.add_user_rating_to_list(veg_user_rating)
+        # Update and display the new average rating
+        st.bar_chart({'Rating': [1, new_average_rating, 6]})  # Visualized as a bar chart
 
     # For non-vegetarian meal
     non_veg_meal_id = non_veg_meal[0]
@@ -58,15 +56,12 @@ for day, meals in zip(days_of_week, grouped_menu):
     non_veg_average_rating = round(sum(non_veg_rating_system.ratings) / len(non_veg_rating_system.ratings), 1)
 
     # Display non-vegetarian meal name and average rating
-    st.text(f"Nicht-vegetarisch: {non_veg_meal_name}")
+    st.text(f"Nicht-vegetarisch: {non_veg_meal_name} (Durchschnittliche Bewertung: {non_veg_average_rating})")
 
     # Allow user to rate non-vegetarian meal
     non_veg_user_rating = st.number_input(f"Bewerte das nicht-vegetarische Gericht '{non_veg_meal_name}' von 1 bis 6",
-                                          min_value=1, max_value=6, step=1, key=f'non_veg_rate_{day}')
-    non_veg_rate_button = st.button(f"Nicht-vegetarisches Gericht '{non_veg_meal_name}' bewerten",
-                                    key=f'non_veg_button_{day}')
-    if non_veg_rate_button:
-        non_veg_rating_system.add_user_rating_to_list(non_veg_user_rating)
-        non_veg_average_rating = round(sum(non_veg_rating_system.ratings) / len(non_veg_rating_system.ratings), 1)
-        # Visualize as bar chart
-        st.bar_chart({'Bewertung': [1, non_veg_average_rating, 6]})
+                                          min_value=1, max_value=6, step=1, key=f'non_veg_{day}')
+    if st.button(f"Bewertung abgeben für '{non_veg_meal_name}'", key=f'non_veg_btn_{day}'):
+        new_average_rating = non_veg_rating_system.add_user_rating_to_list(non_veg_user_rating)
+        # Update and display the new average rating
+        st.bar_chart({'Rating': [1, new_average_rating, 6]})  # Visualized as a bar chart
