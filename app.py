@@ -1,5 +1,5 @@
 import streamlit as st
-import pandas as pd
+import plotly.graph_objects as go
 from menu_generator import WeeklyMenuGenerator
 from rating import MealRatingSystem
 
@@ -26,9 +26,6 @@ for day, meals in zip(days_of_week, grouped_menu):
         meal_id, meal_name = meal
         rating_system = MealRatingSystem(meal_id)
 
-        # Zeige den Namen der Mahlzeit an
-        st.text(f"{meal_name} (Aktuelle Bewertungen)")
-
         # Eingabe für neue Bewertungen über Streamlit
         user_rating = st.number_input("Bewerte dieses Gericht von 1 bis 6", min_value=1, max_value=6, step=1,
                                       key=f"{meal_id}_{day}")
@@ -37,8 +34,20 @@ for day, meals in zip(days_of_week, grouped_menu):
             new_average_rating = rating_system.add_user_rating_to_list(user_rating)
             rating_system.save_ratings(rating_system.ratings)
 
-            # Visualisiere den aktualisierten Durchschnitt als Balkendiagramm direkt unter jedem Gericht
-            data = pd.DataFrame({'Durchschnittsbewertung': [new_average_rating]}, index=[meal_name])
-            st.bar_chart(data)
+            # Erstelle ein Plotly-Bar-Diagramm mit dem aktualisierten Durchschnitt
+            fig = go.Figure(go.Bar(
+                x=[meal_name], y=[new_average_rating],
+                text=[f"{new_average_rating}"], textposition='auto',
+                marker=dict(color='blue', line=dict(color='rgb(8,48,107)', width=1.5))
+            ))
+            fig.update_layout(
+                title_text='Aktualisierte Durchschnittsbewertung',
+                xaxis=dict(title='Gericht'),
+                yaxis=dict(title='Durchschnittsbewertung', range=[0, 6]),
+                plot_bgcolor='rgba(245, 246, 249, 1)',
+                showlegend=False
+            )
+            fig.update_traces(marker_line_width=0.5, width=0.2)  # Kontrolle über die Balkenbreite
+            st.plotly_chart(fig, use_container_width=True)
         elif submit_button:
             st.error("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
