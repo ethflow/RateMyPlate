@@ -43,6 +43,20 @@ class MealRatingSystem:
         with open(self.filename, 'w') as file:
             file.writelines(f"{rating}\n" for rating in ratings)
 
+    def request_user_rating(input_function=input):
+        while True:
+            user_input = input_function("Schön warst du Gast bei uns :-) bewerte dein Gericht von 1 bis 6: ")
+            try:
+                user_rating = int(user_input)
+                if 1 <= user_rating <= 6:
+                    break
+                else:
+                    print("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
+            except ValueError:
+                print("Bitte bewerte dein Gericht mit einer ganzen Zahl von 1 bis 6")
+        return user_rating
+
+
     def add_user_rating_to_list(self, user_rating):
         """Add user rating to the existing list of ratings and calculate the new average."""
         self.ratings.append(user_rating)

@@ -3,37 +3,79 @@ import random
 
 class WeeklyMenuGenerator:
     def __init__(self):
-        # Cache the meals data to reduce API calls
-        self.meals_cache = {}
-        self.grouped_menu = self.generate_weekly_menu()
+        self.weekly_menu = []
+        self.veg_menu = self.generate_vegetarian_menu()
+        self.non_veg_menu = self.generate_non_vegetarian_menu()
+        self.grouped_menu = self.group_meals_by_day()
 
-    def fetch_meals(self, category):
-        # Check the cache first
-        if category in self.meals_cache:
-            return self.meals_cache[category]
+    def generate_vegetarian_menu(self):
+        veg_menu = []
+        meal_ids_set = set()
+        url = 'https://www.themealdb.com/api/json/v1/1/filter.php?c=vegetarian'
 
-        # Fetch meals from API and cache the result
-        url = f'https://www.themealdb.com/api/json/v1/1/filter.php?c={category}'
+        while len(veg_menu) < 5:
+            new_meal = self.fetch_random_meal(url)
+            
+            if new_meal is None:
+                continue
+            
+            meal_id, meal_name = new_meal
+            
+            # Check if the meal ID is unique and add it to the menu
+            if meal_id not in meal_ids_set:
+                meal_ids_set.add(meal_id)
+                veg_menu.append(new_meal)
+        
+        return veg_menu
+
+    def generate_non_vegetarian_menu(self):
+        # Non-vegetarian categories and URLs
+        categories = {
+            'chicken': 'https://www.themealdb.com/api/json/v1/1/filter.php?c=chicken',
+            'pasta': 'https://www.themealdb.com/api/json/v1/1/filter.php?c=pasta',
+            'beef': 'https://www.themealdb.com/api/json/v1/1/filter.php?c=beef',
+            'seafood': 'https://www.themealdb.com/api/json/v1/1/filter.php?c=seafood',
+            'pork': 'https://www.themealdb.com/api/json/v1/1/filter.php?c=pork',
+        }
+        
+        non_veg_menu = []
+        
+        for category, url in categories.items():
+            meal = self.fetch_random_meal(url)
+            if meal is not None:
+                non_veg_menu.append(meal)
+        
+        return non_veg_menu
+
+    def fetch_random_meal(self, url):
         response = requests.get(url)
         data = response.json()
         meals_list = data.get('meals', [])
         
-        # Cache the result for future use
-        self.meals_cache[category] = meals_list
-        return meals_list
-
-    def generate_weekly_menu(self):
-        categories = ['vegetarian', 'chicken', 'pasta', 'beef', 'seafood', 'pork']
-        weekly_menu = []
-        random.seed()
-
-        # For each category, fetch a random meal
-        for category in categories:
-            meals_list = self.fetch_meals(category)
-            if meals_list:
-                random_meal = random.choice(meals_list)
-                weekly_menu.append(random_meal)
+        if not meals_list:
+            # If there are no meals in the response, return None
+            return None
         
-        # Pair each vegetarian meal with one non-vegetarian meal for each weekday
-        paired_menu = list(zip(weekly_menu[0:1], weekly_menu[1:]))
-        return paired_menu
+        # Choose a random index from the list of meals
+        i = random.randint(0, len(meals_list) - 1)
+        
+        # Get meal information from the random index
+        meal_id = meals_list[i]['idMeal']
+        meal_name = meals_list[i]['strMeal']
+        
+        # Return the meal information as a tuple
+        return (meal_id, meal_name)
+
+    def group_meals_by_day(self):
+        # Pair one vegetarian and one non-vegetarian meal for each day of the week (Monday to Friday)
+        grouped_menu = []
+
+        # Zip the vegetarian and non-vegetarian menus
+        paired_meals = zip(self.veg_menu, self.non_veg_menu)
+
+        # Iterate over the paired meals
+        for day, (veg_meal, non_veg_meal) in enumerate(paired_meals, start=1):
+            # Create a tuple with the vegetarian and non-vegetarian meal
+            grouped_menu.append((veg_meal, non_veg_meal))
+
+        return grouped_menu
