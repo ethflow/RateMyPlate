@@ -20,21 +20,23 @@ for day, meals in zip(days_of_week, grouped_menu):
     veg_meal, non_veg_meal = meals
     st.subheader(day)
 
-    # Display and rate each meal type (vegetarian and non-vegetarian)
-    for meal_id, meal_name in [veg_meal, non_veg_meal]:
-        meal_type = "Vegetarisch" if meal_id == veg_meal[0] else "Nicht-vegetarisch"
+    # Process each meal type (vegetarian and non-vegetarian)
+    for meal in [veg_meal, non_veg_meal]:
+        meal_id, meal_name = meal
         rating_system = MealRatingSystem(meal_id)
-        average_rating = round(sum(rating_system.ratings) / len(rating_system.ratings), 1)
 
-        # Display meal name and average rating
-        st.write(f"{meal_type}: {meal_name} (Durchschnittliche Bewertung: {average_rating})")
+        # Display meal name
+        st.text(f"{meal_name} (Aktuelle Bewertungen)")
 
-        # Input for new rating
-        user_rating = st.number_input("Bewerte dieses Gericht von 1 bis 6", min_value=1, max_value=6, step=1, key=f"{meal_id}")
-        if st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{meal_id}"):
+        # Streamlit input for new rating
+        user_rating = st.number_input("Bewerte dieses Gericht von 1 bis 6", min_value=1, max_value=6, step=1,
+                                      key=f"{meal_id}_{day}")
+        submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{meal_id}_{day}")
+        if submit_button and 1 <= user_rating <= 6:
             new_average_rating = rating_system.add_user_rating_to_list(user_rating)
             rating_system.save_ratings(rating_system.ratings)
-            st.write(f"Neue durchschnittliche Bewertung: {new_average_rating}")
 
-            # Optional: Visualize the updated average as a bar chart
-            st.bar_chart({'Rating': [1, new_average_rating, 6]})
+            # Visualize the updated average as a bar chart directly below each meal
+            st.bar_chart({'Durchschnittsbewertung': [new_average_rating]})
+        elif submit_button:
+            st.error("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
