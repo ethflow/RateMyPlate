@@ -1,5 +1,5 @@
 import streamlit as st
-import plotly.express as px
+import plotly.graph_objects as go
 from menu_generator import WeeklyMenuGenerator
 from rating import MealRatingSystem
 
@@ -38,7 +38,8 @@ for day, meals in zip(days_of_week, grouped_menu):
             rating_system.save_ratings(rating_system.ratings)
 
             # Create a Plotly bar chart with the updated average rating
-            fig = px.bar(x=[meal_name], y=[new_average_rating], range_y=[1, 6], text=[new_average_rating])
+            fig = go.Figure(
+                data=[go.Bar(x=[meal_name], y=[new_average_rating], text=[new_average_rating], textposition='auto')])
             fig.update_traces(marker_color='blue', marker_line_width=1.5, width=0.1)  # Make the bar thinner
             fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', showlegend=False,
                               xaxis_title="", yaxis_title="Rating",
