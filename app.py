@@ -42,3 +42,5 @@ for day, meals in zip(days_of_week, grouped_menu):
             st.bar_chart(data)
         elif submit_button:
             st.error("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
+
+
