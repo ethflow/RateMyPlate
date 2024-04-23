@@ -27,7 +27,7 @@ for day, meals in zip(days_of_week, grouped_menu):
         rating_system = MealRatingSystem(meal_id)
 
         # Zeige den Namen der Mahlzeit an
-        st.text(f"{meal_name} (Aktuelle Bewertungen)")
+        st.text(f"{meal_name})
 
         # Eingabe für neue Bewertungen über Streamlit
         user_rating = st.number_input("Bewerte dieses Gericht von 1 bis 6", min_value=1, max_value=6, step=1,
