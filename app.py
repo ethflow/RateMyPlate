@@ -17,6 +17,9 @@ grouped_menu = st.session_state.menu_generator.grouped_menu
 
 # Display the grouped weekly menu from Monday to Friday
 days_of_week = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
+meal_names = []
+average_ratings = []
+
 for day, meals in zip(days_of_week, grouped_menu):
     veg_meal, non_veg_meal = meals
     st.subheader(day)
@@ -34,8 +37,20 @@ for day, meals in zip(days_of_week, grouped_menu):
                                       key=f"{meal_id}_{day}")
         submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{meal_id}_{day}")
         if submit_button:
+            # Add user rating to the list and calculate the new average
             new_average_rating = rating_system.add_user_rating_to_list(user_rating)
             rating_system.save_ratings(rating_system.ratings)
 
-        elif submit_button:
-            st.error("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
+        # Store the meal name and average rating for visualization
+        meal_names.append(meal_name)
+        average_ratings.append(new_average_rating)
+
+# Create a DataFrame with the meal names and average ratings
+data = pd.DataFrame({
+    'Meal': meal_names,
+    'Average Rating': average_ratings
+})
+
+# Visualize the average ratings at the end of the site
+st.subheader("Durchschnittliche Bewertungen der Gerichte")
+st.bar_chart(data.set_index('Meal'))
