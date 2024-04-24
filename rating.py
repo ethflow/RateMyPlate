@@ -21,7 +21,7 @@ class MealRatingSystem:
         else:
             raise ValueError(f"No meal found with the name {meal_name}")
 
-    def generate_random_ratings(self, num_ratings=50, rating_scale=(1, 6)):
+    def generate_random_ratings(self, num_ratings=20, rating_scale=(1, 6)):
         """Generate random ratings for the meal."""
         random.seed(self.meal_id)  # Use meal_id as the seed for reproducibility
         ratings = [random.randint(*rating_scale) for _ in range(num_ratings)]
