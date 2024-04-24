@@ -28,28 +28,30 @@ for day, meals in zip(days_of_week, grouped_menu):
     # Process each meal type (vegetarian and non-vegetarian)
     for meal in [veg_meal, non_veg_meal]:
         meal_id, meal_name = meal
-        rating_system = MealRatingSystem(meal_id)
+        # Initialize MealRatingSystem for each meal
+        rating_system = MealRatingSystem(meal_id=meal_id, meal_name=meal_name)
 
         # Display the meal name
         st.text(f"{meal_name}")
 
         # Input for new ratings using Streamlit
-        user_rating = st.number_input("Bewerte dieses Gericht von 1 bis 6", min_value=1, max_value=6, step=1,
+        user_rating = st.number_input(f"Bewerte {meal_name} von 1 bis 6", min_value=1, max_value=6, step=1,
                                       key=f"{meal_id}_{day}")
         submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{meal_id}_{day}")
 
         if submit_button:
             # Add user rating to the list and calculate the new average
             new_average_rating = rating_system.add_user_rating_to_list(user_rating)
-            rating_system.save_ratings(rating_system.ratings)
 
-        # Append meal name and average rating to the lists
+            # Update the average rating display in the UI
+            st.write(f"Neuer durchschnittlicher Bewertung für {meal_name}: {new_average_rating}")
+
+        # Append meal name and the current average rating to the lists
         meal_names.append(meal_name)
-        # Check if the meal already has ratings
         if rating_system.ratings:
-            average_rating = rating_system.add_user_rating_to_list(0)  # Calculate current average
+            average_rating = round(sum(rating_system.ratings) / len(rating_system.ratings), 1)
         else:
-            average_rating = 0  # No ratings yet
+            average_rating = 0
         average_ratings.append(average_rating)
 
 # Create a DataFrame with the meal names and average ratings

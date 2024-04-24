@@ -1,65 +1,35 @@
 import requests
 import random
-import os
 
 class MealRatingSystem:
-    def __init__(self, meal_id):
+    def __init__(self, meal_id=None, meal_name=None):
         self.meal_id = meal_id
-        self.filename = f"ratings_{self.meal_id}.txt"
-        self.ratings = self.load_existing_ratings()  # Load existing ratings on initialization
+        self.meal_name = meal_name
+        self.ratings = self.generate_random_ratings() if meal_id else []
 
-    def fetch_meal_data(self):
-        """Fetch meal data from TheMealDB API based on the given meal ID."""
-        url = f"https://www.themealdb.com/api/json/v1/1/lookup.php?i={self.meal_id}"
+    def fetch_meal_data(self, meal_name):
+        """Fetch meal data from TheMealDB API based on the meal name."""
+        url = f"https://www.themealdb.com/api/json/v1/1/search.php?s={meal_name}"
         response = requests.get(url)
         data = response.json()
-        return data
+        
+        if data['meals']:
+            meal_info = data['meals'][0]
+            self.meal_id = meal_info['idMeal']
+            self.meal_name = meal_info['strMeal']
+            self.ratings = self.generate_random_ratings()
+        else:
+            raise ValueError(f"No meal found with the name {meal_name}")
 
-    def extract_meal_info(self, data):
-        """Extract meal ID and meal name from the API response."""
-        meals = data['meals'][0]
-        self.meal_name = meals['strMeal']
-        return self.meal_id, self.meal_name
-
-    def generate_consistent_ratings(self, num_ratings=50, rating_scale=(1, 6)):
-        """Generate consistent ratings using a deterministic random seed."""
-        random.seed(int(self.meal_id))
+    def generate_random_ratings(self, num_ratings=50, rating_scale=(1, 6)):
+        """Generate random ratings for the meal."""
+        random.seed(self.meal_id)  # Use meal_id as the seed for reproducibility
         ratings = [random.randint(*rating_scale) for _ in range(num_ratings)]
         return ratings
 
-    def load_existing_ratings(self):
-        """Load existing ratings from a file."""
-        if os.path.exists(self.filename):
-            with open(self.filename, 'r') as file:
-                return [int(line.strip()) for line in file]
-        else:
-            # If no existing ratings, generate initial ratings
-            initial_ratings = self.generate_consistent_ratings()
-            self.save_ratings(initial_ratings)
-            return initial_ratings
-
-    def save_ratings(self, ratings):
-        """Save ratings to a file."""
-        with open(self.filename, 'w') as file:
-            file.writelines(f"{rating}\n" for rating in ratings)
-
-    def request_user_rating(input_function=input):
-        while True:
-            user_input = input_function("Schön warst du Gast bei uns :-) bewerte dein Gericht von 1 bis 6: ")
-            try:
-                user_rating = int(user_input)
-                if 1 <= user_rating <= 6:
-                    break
-                else:
-                    print("Bitte bewerte dein Gericht mit einer Zahl von 1 bis 6")
-            except ValueError:
-                print("Bitte bewerte dein Gericht mit einer ganzen Zahl von 1 bis 6")
-        return user_rating
-
-
     def add_user_rating_to_list(self, user_rating):
-        """Add user rating to the existing list of ratings and calculate the new average."""
+        """Add a user rating to the list and calculate the new average for the meal."""
         self.ratings.append(user_rating)
+        # Calculate the new average rating
         new_average = round(sum(self.ratings) / len(self.ratings), 1)
-        self.save_ratings(self.ratings)
         return new_average
