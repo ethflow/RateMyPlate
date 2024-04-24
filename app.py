@@ -21,6 +21,9 @@ average_ratings = []
 
 # Display the grouped weekly menu from Monday to Friday
 days_of_week = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
+# Initialize a counter for unique keys
+rating_counter = 0
+
 for day, meals in zip(days_of_week, grouped_menu):
     veg_meal, non_veg_meal = meals
     st.subheader(day)
@@ -34,10 +37,14 @@ for day, meals in zip(days_of_week, grouped_menu):
         # Display the meal name
         st.text(f"{meal_name}")
 
+        # Generate a unique key for each rating and submit button by combining meal ID, day of the week, and the counter
+        unique_key = f"{meal_id}_{day}_{rating_counter}"
+        rating_counter += 1
+
         # Input for new ratings using Streamlit
         user_rating = st.number_input(f"Bewerte {meal_name} von 1 bis 6", min_value=1, max_value=6, step=1,
-                                      key=f"{meal_id}_{day}")
-        submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{meal_id}_{day}")
+                                      key=unique_key)
+        submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{unique_key}")
 
         if submit_button:
             # Add user rating to the list and calculate the new average
