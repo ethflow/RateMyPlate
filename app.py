@@ -42,17 +42,31 @@ for day, meals in zip(days_of_week, grouped_menu):
         rating_counter += 1
 
         # Input for new ratings using Streamlit
-        user_rating = st.number_input(f"Bewerte {meal_name} von 1 bis 6", min_value=1, max_value=6, step=1,
-                                      key=unique_key)
-        st.write(user_rating)
-        submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{unique_key}")
+        # Capture the user's input as a string using st.text_input
+        user_input = st.text_input(f"Bewerte {meal_name} von 1 bis 6", key=unique_key)
 
+        # Try to convert the input to an integer
+        try:
+            user_rating = int(user_input)
+        except ValueError:
+            user_rating = None  # If the input cannot be converted to an integer
+
+        # Check if the input is within the valid range
+        if user_rating is not None and 1 <= user_rating <= 6:
+            # Display the user rating (optional)
+            st.write(user_rating)
+            # Button to submit the rating
+            submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{unique_key}")
+        
         if submit_button:
             # Add user rating to the list and calculate the new average
             new_average_rating = rating_system.add_user_rating_to_list(user_rating)
 
             # Update the average rating display in the UI
             st.write(f"Neuer durchschnittlicher Bewertung für {meal_name}: {new_average_rating}")
+        else:
+            # Display an error message if the input is invalid
+            st.error("Bitte geben Sie eine Bewertung von 1 bis 6 ein.")
 
         # Append meal name and the current average rating to the lists
         meal_names.append(meal_name)
