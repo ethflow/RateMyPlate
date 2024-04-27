@@ -19,7 +19,7 @@ class WeeklyMenuGenerator:
             if new_meal is None:
                 continue
             
-            meal_id, meal_name = new_meal
+            meal_id, meal_name, meal_thumb = new_meal
             
             # Check if the meal ID is unique and add it to the menu
             if meal_id not in meal_ids_set:
@@ -51,19 +51,19 @@ class WeeklyMenuGenerator:
         response = requests.get(url)
         data = response.json()
         meals_list = data.get('meals', [])
-        
+
         if not meals_list:
             # If there are no meals in the response, return None
             return None
-        
+
         # Choose a random index from the list of meals
         i = random.randint(0, len(meals_list) - 1)
-        
+
         # Get meal information from the random index
         meal_id = meals_list[i].get('idMeal')
         meal_name = meals_list[i].get('strMeal')
-        meal_thumb = meals_list[i].get('strMealThumb')
-        
+        meal_thumb = meals_list[i].get('strMealThumb')  # Fetch the meal image URL
+
         # Return the meal information as a tuple
         return (meal_id, meal_name, meal_thumb)
 
