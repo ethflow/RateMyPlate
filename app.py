@@ -44,6 +44,7 @@ for day, meals in zip(days_of_week, grouped_menu):
         # Input for new ratings using Streamlit
         user_rating = st.number_input(f"Bewerte {meal_name} von 1 bis 6", min_value=1, max_value=6, step=1,
                                       key=unique_key)
+        st.write(user_rating)
         submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{unique_key}")
 
         if submit_button:
