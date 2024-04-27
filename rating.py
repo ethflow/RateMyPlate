@@ -1,6 +1,5 @@
 import requests
 import random
-import streamlit as st
 
 class MealRatingSystem:
     # Dictionary to store ratings for each meal ID
@@ -46,18 +45,13 @@ class MealRatingSystem:
 
     def add_user_rating_to_list(self, user_rating):
         """Add a user rating to the list and calculate the new average for the meal."""
-        # Validate the user rating
-        if user_rating < 1 or user_rating > 6:
-            # If the rating is out of bounds, return an error message or ignore the rating
-            st.error("Invalid rating. Please provide a rating between 1 and 6.")
-            return None
-
-        # Add the rating to the list
-        else:
+        if 1 <= user_rating <= 6:
             self.ratings.append(user_rating)
-            # Store the updated ratings list in the dictionary
+        # Store the updated ratings list in the dictionary
             MealRatingSystem.ratings_dict[self.meal_id] = self.ratings
-
-            # Calculate the new average rating
+        
+        # Calculate the new average rating
             new_average = round(sum(self.ratings) / len(self.ratings), 1)
             return new_average
+        else:
+            return None
