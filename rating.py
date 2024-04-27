@@ -53,10 +53,11 @@ class MealRatingSystem:
             return None
 
         # Add the rating to the list
-        self.ratings.append(user_rating)
-        # Store the updated ratings list in the dictionary
-        MealRatingSystem.ratings_dict[self.meal_id] = self.ratings
+        else:
+            self.ratings.append(user_rating)
+            # Store the updated ratings list in the dictionary
+            MealRatingSystem.ratings_dict[self.meal_id] = self.ratings
 
-        # Calculate the new average rating
-        new_average = round(sum(self.ratings) / len(self.ratings), 1)
-        return new_average
+            # Calculate the new average rating
+            new_average = round(sum(self.ratings) / len(self.ratings), 1)
+            return new_average
