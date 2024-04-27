@@ -3,12 +3,9 @@ import pandas as pd
 from menu_generator import WeeklyMenuGenerator
 from rating import MealRatingSystem
 
-# Title of the application
-st.title("Wochenplan")
-
+st.title("Willkommen bei RateMyPlate!")
 # Description of the application
 st.markdown("""
-**Willkommen bei RateMyPlate!**
 
 Mit dieser App können Sie jedes Gericht dieser Woche bewerten. Die Bewertung folgt einer Notenskala.
 Auf Basis Ihres Feedbacks kann das wöchentliche Angebot der Mensa kontinuierlich verbessert werden!
@@ -22,6 +19,9 @@ Auf Basis Ihres Feedbacks kann das wöchentliche Angebot der Mensa kontinuierlic
 
 Vielen Dank für Ihr Feedback!
 """)
+
+# Title of the application
+st.title("Wochenplan")
 
 # Initialize the menu generator as a session state variable to persist across reloads
 if 'menu_generator' not in st.session_state:
