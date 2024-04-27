@@ -60,11 +60,12 @@ class WeeklyMenuGenerator:
         i = random.randint(0, len(meals_list) - 1)
         
         # Get meal information from the random index
-        meal_id = meals_list[i]['idMeal']
-        meal_name = meals_list[i]['strMeal']
+        meal_id = meals_list[i].get('idMeal')
+        meal_name = meals_list[i].get('strMeal')
+        meal_thumb = meals_list[i].get('strMealThumb')
         
         # Return the meal information as a tuple
-        return (meal_id, meal_name)
+        return (meal_id, meal_name, meal_thumb)
 
     def group_meals_by_day(self):
         # Pair one vegetarian and one non-vegetarian meal for each day of the week (Monday to Friday)

@@ -30,13 +30,17 @@ for day, meals in zip(days_of_week, grouped_menu):
 
     # Process each meal type (vegetarian and non-vegetarian)
     for meal in [veg_meal, non_veg_meal]:
-        meal_id, meal_name = meal
+        meal_id, meal_name, meal_thumb = meal
         # Initialize MealRatingSystem for each meal
         rating_system = MealRatingSystem(meal_id=meal_id, meal_name=meal_name)
 
         # Display the meal name
         st.text(f"{meal_name}")
 
+        # Display the meal image
+        if meal_thumb:
+            st.image(meal_thumb, caption=meal_name)
+            
         # Generate a unique key for each rating and submit button by combining meal ID, day of the week, and the counter
         unique_key = f"{meal_id}_{day}_{rating_counter}"
         rating_counter += 1
