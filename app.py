@@ -6,6 +6,23 @@ from rating import MealRatingSystem
 # Title of the application
 st.title("Wochenplan")
 
+# Description of the application
+st.markdown("""
+**Willkommen bei RateMyPlate!**
+
+Mit dieser App können Sie jedes Gericht dieser Woche bewerten. Die Bewertung folgt einer Notenskala.
+Auf Basis Ihres Feedbacks kann das wöchentliche Angebot der Mensa kontinuierlich verbessert werden!
+
+**Anleitung zur Nutzung der App:**
+- Sehen Sie sich den Wochenplan von Montag bis Freitag an, der täglich eine vegetarische und eine nicht-vegetarische Mahlzeit bietet.
+- Um eine Mahlzeit zu bewerten, geben Sie eine Zahl von 1 bis 6 in das Eingabefeld unter dem Gericht ein.
+- Nachdem Sie Ihre Bewertung eingegeben haben, klicken Sie auf die Schaltfläche "Bewertung abgeben", um Ihre Bewertung abzusenden.
+- Die App berechnet und zeigt die neue durchschnittliche Bewertung für die Mahlzeit an.
+- Am Ende der Woche können Sie ein Balkendiagramm mit den durchschnittlichen Bewertungen aller Mahlzeiten im Menü sehen.
+
+Vielen Dank für Ihr Feedback!
+""")
+
 # Initialize the menu generator as a session state variable to persist across reloads
 if 'menu_generator' not in st.session_state:
     st.session_state.menu_generator = WeeklyMenuGenerator()
