@@ -73,11 +73,11 @@ for day, meals in zip(days_of_week, grouped_menu):
 
         # Check if user input is not empty
         if user_input:
-            # Try to convert the input to an integer
+            #Try to convert the input to an integer
             try:
                 user_rating = int(user_input)
             except ValueError:
-                valid_input = False  # Invalid input, not a number
+                valid_input = False  #Invalid input, not a number
 
             # Check if the input is within the valid range
             if valid_input and not (1 <= user_rating <= 6):
