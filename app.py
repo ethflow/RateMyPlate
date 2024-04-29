@@ -25,38 +25,44 @@ Vielen Dank für Ihr Feedback!
 
 st.title("Wochenplan")
 
-# Initialize the menu generator as a session state variable to persist across reloads
+# Create a session state
 if 'menu_generator' not in st.session_state:
     st.session_state.menu_generator = WeeklyMenuGenerator()
 
-# Generate a new weekly menu when the button is clicked, or use the existing one
+# Generate a new weekly menu when the button is clicked
 if st.button("Nächste Woche"):
     st.session_state.menu_generator = WeeklyMenuGenerator()
+
 grouped_menu = st.session_state.menu_generator.grouped_menu
 
 # Initialize lists to store meals and their average ratings
 meal_names = []
 average_ratings = []
 
-# Display the grouped weekly menu from Monday to Friday
+# Create list with days of week from Monday to Friday
 days_of_week = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
-# Initialize a counter for unique keys
+
+# Initialize a counter for unique keys, so multiple ratings for the same meal are possible
 rating_counter = 0
 
-for day, meals in zip(days_of_week, grouped_menu):
-    veg_meal, non_veg_meal = meals
-    st.subheader(day)
+# Loop through each day and display the menu to the user 
+# zip: https://realpython.com/python-zip-function/
+for day, meals in zip(days_of_week, grouped_menu): 
+    # Unpack the tuple of meals for the day
+    veg_meal, non_veg_meal = meals 
+    
+    st.subheader(day) 
 
     # Process each meal type (vegetarian and non-vegetarian)
     for meal in [veg_meal, non_veg_meal]:
-        meal_id, meal_name, meal_thumb = meal
-        # Initialize MealRatingSystem for each meal
+        # Unpack each meal into ID, name and thumbnail
+        meal_id, meal_name, meal_thumb = meal 
+        # Initialize rating system for each meal
         rating_system = MealRatingSystem(meal_id=meal_id, meal_name=meal_name)
 
-        # Display the meal name
         st.text(f"{meal_name}")
 
-        # Display the meal image
+        # Display the meal image if image exists
         if meal_thumb:
             st.image(meal_thumb, caption=meal_name)
 
@@ -64,7 +70,7 @@ for day, meals in zip(days_of_week, grouped_menu):
         unique_key = f"{meal_id}_{day}_{rating_counter}"
         rating_counter += 1
 
-        # Capture the user's input as a string using st.text_input
+        # Capture the users input as a string
         user_input = st.text_input(f"Bewerte {meal_name} von 1 bis 6", key=unique_key)
 
         # Initialize variables for user rating and whether input is valid
@@ -73,7 +79,7 @@ for day, meals in zip(days_of_week, grouped_menu):
 
         # Check if user input is not empty
         if user_input:
-            #Try to convert the input to an integer
+            #Try to convert the input to an integer, https://www.w3schools.com/python/python_try_except.asp
             try:
                 user_rating = int(user_input)
             except ValueError:
@@ -85,9 +91,9 @@ for day, meals in zip(days_of_week, grouped_menu):
 
         # Display an error message if the input is invalid and not empty
         if user_input and not valid_input:
-            st.error("Bitte geben Sie eine Bewertung von 1 bis 6 ein.")
+            st.error("Bitte geben Sie eine ganzzahlige Bewertung von 1 bis 6 ein.")
 
-        # Always display the button
+        # Display rating button, distinguishable with unique key
         submit_button = st.button(f"Bewertung abgeben für {meal_name}", key=f"btn_{unique_key}")
 
         # If the button is clicked and the input is valid, process the rating
@@ -97,20 +103,23 @@ for day, meals in zip(days_of_week, grouped_menu):
 
             # Update the average rating display in the UI
             st.write(f"Neuer durchschnittlicher Bewertung für {meal_name}: {new_average_rating}")
-
+        
+        # Adds the current meal name to a list, used in data frame
         meal_names.append(meal_name)
+
+        # Calculate the average rating, used in data frame
         if rating_system.ratings:
             average_rating = round(sum(rating_system.ratings) / len(rating_system.ratings), 1)
         else:
             average_rating = 0
         average_ratings.append(average_rating)
 
-# Create a DataFrame with the meal names and average ratings
+# Create a data frame with the meal names and average ratings
 data = pd.DataFrame({
     'Meal': meal_names,
     'Average Rating': average_ratings
 })
 
-# Visualize the average ratings at the end of the site
+# Visualize the average ratings derived from data frame
 st.subheader("Durchschnittliche Bewertungen der Gerichte")
 st.bar_chart(data.set_index('Meal'))
