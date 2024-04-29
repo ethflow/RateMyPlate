@@ -64,7 +64,7 @@ for day, meals in zip(days_of_week, grouped_menu):
 
         # Display the meal image if image exists
         if meal_thumb:
-            st.image(meal_thumb, caption=meal_name)
+            st.image(meal_thumb)
 
         # Generate a unique key for each rating and submit button by combining meal ID, day of the week, and the counter
         unique_key = f"{meal_id}_{day}_{rating_counter}"
