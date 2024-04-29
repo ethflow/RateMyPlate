@@ -83,8 +83,8 @@ class WeeklyMenuGenerator:
         # Zip the vegetarian and non-vegetarian menus
         paired_meals = zip(self.veg_menu, self.non_veg_menu)
 
-        # Iterate over the paired meals
-        for day, (veg_meal, non_veg_meal) in paired_meals:
+        # Iterate over the paired meals, enumerate: https://www.geeksforgeeks.org/enumerate-in-python/
+        for day, (veg_meal, non_veg_meal) in enumerate(paired_meals, start=1):
             # Create a tuple with the vegetarian and non-vegetarian meal
             grouped_menu.append((veg_meal, non_veg_meal))
 
