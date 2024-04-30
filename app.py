@@ -45,7 +45,7 @@ days_of_week = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
 # Initialize a counter for unique keys, so multiple ratings for the same meal are possible
 rating_counter = 0
 
-# Loop through each day and display the menu to the user 
+# Loop through each day and display the menu of each day to the user
 # zip: https://realpython.com/python-zip-function/
 for day, meals in zip(days_of_week, grouped_menu): 
     # Unpack the tuple of meals for the day
