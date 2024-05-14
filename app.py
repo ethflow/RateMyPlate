@@ -1,3 +1,12 @@
+#####################################################################
+# Disclaimer: The code submitted herewith has been optimized with   #
+# the assistance of ChatGPT. However, all initial code was          #
+# independently authored by the team, and the underlying logic      #
+# and structure were developed solely by us. The involvement        #
+# of ChatGPT was limited to optimization tasks and does not         #
+# constitute co-authorship or ownership of the original work.       #
+#####################################################################
+
 import streamlit as st
 import pandas as pd
 from menu_generator import WeeklyMenuGenerator
